@@ -17,6 +17,7 @@ model User {
   id Int @id @default(autoincrement())
   email String @unique
   name String?
+  likedPosts Post[] @relation("LikedPosts")
   posts Post[] // Relationship
   role Role @default(USER)
   createdAt DateTime @default(now())
@@ -29,7 +30,9 @@ model Post {
   published Boolean @default(false)
   authorId Int
   author User @relation(fields: [authorId], references: [id]) // Foreign key to User model
+  likers User[] @relation("LikedPosts")
   createdAt DateTime @default(now())
+
   @@index([title, published])
 }
 

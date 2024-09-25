@@ -13,16 +13,16 @@ async function main() {
     console.log(user);
   }
 
-//   createUser();
+  //   createUser();
 
   async function getAllUsers() {
     const users = await prisma.user.findMany({
-      include: { posts: true },
+      include: { posts: true, likedPosts: true },
     });
     console.log(users);
   }
 
-  getAllUsers();
+  // getAllUsers();
 
   async function getUserByEmail(email: string) {
     const user = await prisma.user.findUnique({
@@ -109,11 +109,13 @@ async function main() {
         email: "messisebsbe@gmail.com",
         name: "Meseret Sebsbe",
         posts: {
-          create: {
-            title: "What is Designer",
-            content: "Designer is hdnshvdhfvdl",
-            published: true,
-          },
+          create: [
+            {
+              title: "What is Designer",
+              content: "Designer is hdnshvdhfvdl",
+              published: true,
+            },
+          ],
         },
       },
     });
@@ -142,6 +144,65 @@ async function main() {
   }
 
   // createUserAndPost();
+
+  async function getAllPosts() {
+    const posts = await prisma.post.findMany({
+      include: { likers: true, author: true },
+    });
+
+    console.log(posts);
+  }
+
+  // getAllPosts();
+
+  async function getPostById() {
+    const post = await prisma.post.findUnique({
+      where: { id: 1 },
+      include: { likers: true },
+    });
+
+    console.log(post);
+  }
+
+  // getPostById();
+
+  async function createUserLikedPost() {
+    const user = await prisma.user.create({
+      data: {
+        email: "user1@example.com",
+        likedPosts: {
+          connect: [{ id: 1 }, { id: 2 }],
+        },
+      },
+    });
+
+    console.log(user);
+  }
+
+  // createUserLikedPost();
+
+  async function createPostWithLikers() {
+    const post = await prisma.post.create({
+      data: {
+        title: "Many to Many Relationship",
+        content:
+          "Many-to-many relationship: Multiple records relate to multiple records in another model, often managed via an implicit join table",
+        author: {
+          create: {
+            email: "user2@example.com",
+            name: "John Doe",
+          },
+        },
+        likers: {
+          connect: [{ id: 1 }, { id: 4 }],
+        },
+      },
+    });
+
+    console.log(post);
+  }
+
+  // createPostWithLikers();
 }
 
 main()
@@ -151,4 +212,3 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
-
