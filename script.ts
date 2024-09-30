@@ -6,18 +6,20 @@ async function main() {
   async function createUser() {
     const user = await prisma.user.create({
       data: {
-        email: "biruk@gmail.com",
-        name: "Biruk Sebsbe",
+        email: "andualemsebsbe1@gmail.com",
+        firstName: "Andualem",
+        lastName: "Sebsbe",
       },
     });
+
     console.log(user);
   }
 
-  //   createUser();
+  // createUser();
 
   async function getAllUsers() {
     const users = await prisma.user.findMany({
-      include: { posts: true, likedPosts: true },
+      include: { writtenPosts: true, likedPosts: true },
     });
     console.log(users);
   }
@@ -53,12 +55,12 @@ async function main() {
     console.log(user);
   }
 
-  // deleteUser(3);
+  // deleteUser(9);
 
-  async function getUsersByName() {
+  async function getUsersByfirstName() {
     const users = await prisma.user.findMany({
       where: {
-        name: {
+        firstName: {
           startsWith: "A",
         },
       },
@@ -67,7 +69,7 @@ async function main() {
     console.log(users);
   }
 
-  // getUsersByName();
+  // getUsersByfirstName();
 
   async function getUsersSorted() {
     const users = await prisma.user.findMany({
@@ -95,7 +97,7 @@ async function main() {
   async function getUserWithPosts() {
     const user = await prisma.user.findUnique({
       where: { id: 1 },
-      include: { posts: true },
+      include: { writtenPosts: true },
     });
 
     console.log(user);
@@ -106,14 +108,14 @@ async function main() {
   async function createUserWithPost() {
     const user = await prisma.user.create({
       data: {
-        email: "messisebsbe@gmail.com",
-        name: "Meseret Sebsbe",
-        posts: {
+        email: "soliyana@gmail.com",
+        firstName: "Soliyana",
+        lastName: "Sebsbe",
+        writtenPosts: {
           create: [
             {
-              title: "What is Designer",
-              content: "Designer is hdnshvdhfvdl",
-              published: true,
+              title: "When is soliyana's birthday?",
+              content: "Soliyana's birthday is on January 13, 2024",
             },
           ],
         },
@@ -125,10 +127,48 @@ async function main() {
 
   // createUserWithPost();
 
+  async function createUserWithEnum() {
+    const user = await prisma.user.create({
+      data: {
+        email: "daniel@gmail.com",
+        firstName: "Daniel",
+        lastName: "Sebsbe",
+        role: "MODERATOR",
+      },
+    });
+  }
+
+  // createUserWithEnum();
+
+  async function updateUserWithEnum() {
+    const updatedUser = await prisma.user.update({
+      where: { id: 3 },
+      data: {
+        role: "MODERATOR",
+      },
+    });
+
+    console.log(updatedUser);
+  }
+
+  // updateUserWithEnum();
+
+  async function getUserByRole() {
+    const moderators = await prisma.user.findMany({
+      where: {
+        role: "MODERATOR",
+      },
+    });
+
+    console.log(moderators);
+  }
+
+  // getUserByRole();
+
   async function createUserAndPost() {
     const [user, post] = await prisma.$transaction([
       prisma.user.create({
-        data: { email: "yordanos@gmail.com", name: "Yordanos Shiferaw" },
+        data: { email: "yordanos@gmail.com", firstName: "Yordanos Shiferaw" },
       }),
 
       prisma.post.create({
@@ -170,6 +210,7 @@ async function main() {
     const user = await prisma.user.create({
       data: {
         email: "user1@example.com",
+        firstName: "Andualem",
         likedPosts: {
           connect: [{ id: 1 }, { id: 2 }],
         },
@@ -184,17 +225,19 @@ async function main() {
   async function createPostWithLikers() {
     const post = await prisma.post.create({
       data: {
-        title: "Many to Many Relationship",
-        content:
-          "Many-to-many relationship: Multiple records relate to multiple records in another model, often managed via an implicit join table",
+        title: "What is Next.js?",
+        content: "Next.js is a fullstack framework built on the top of React",
+        published: true,
         author: {
-          create: {
-            email: "user2@example.com",
-            name: "John Doe",
-          },
+          // create: {
+          //   email: "soliyana@example.com",
+          //   firstName: "Soliyana",
+          //   lastName: "Sebsbe",
+          // },
+          connect: { id: 7 },
         },
         likers: {
-          connect: [{ id: 1 }, { id: 4 }],
+          connect: [{ id: 5 }, { id: 11 }],
         },
       },
     });
@@ -202,7 +245,7 @@ async function main() {
     console.log(post);
   }
 
-  // createPostWithLikers();
+  createPostWithLikers();
 }
 
 main()

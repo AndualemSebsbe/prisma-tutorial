@@ -16,11 +16,18 @@ datasource db {
 model User {
   id Int @id @default(autoincrement())
   email String @unique
-  name String?
+  firstName String @map("first_name") // Maps to "first_name" column in DB
+  lastName String? @map("last_name")
+  writtenPosts Post[] @relation("WrittenPosts") // Relationship
   likedPosts Post[] @relation("LikedPosts")
-  posts Post[] // Relationship
   role Role @default(USER)
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt // Automatically updates on each update
+
+  tempField String? @ignore // Ignored by prisma "tempField" in prisma but present in DB
+
+  @@map("user_data") // Maps the model to the "user_data" table in DB
+  @@unique([firstName, lastName]) // Ensures that the combination is unique
 }
 
 model Post {
@@ -29,14 +36,22 @@ model Post {
   content String?
   published Boolean @default(false)
   authorId Int
-  author User @relation(fields: [authorId], references: [id]) // Foreign key to User model
+  author User @relation("WrittenPosts", fields: [authorId], references: [id]) // Foreign key to User model
   likers User[] @relation("LikedPosts")
   createdAt DateTime @default(now())
 
   @@index([title, published])
 }
 
+model Order {
+  userId Int
+  productId Int
+
+  @@id([userId, productId]) // Composite primary key
+}
+
 enum Role {
   USER
   ADMIN
+  MODERATOR
 }
