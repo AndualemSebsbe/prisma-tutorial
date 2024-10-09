@@ -18,9 +18,12 @@ model User {
   email String @unique
   firstName String @map("first_name") // Maps to "first_name" column in DB
   lastName String? @map("last_name")
+  age Int?
   writtenPosts Post[] @relation("WrittenPosts") // Relationship
   likedPosts Post[] @relation("LikedPosts")
-  role Role @default(USER)
+  profile Profile?
+  role RoleEnum @default(USER)
+  roles Role[] @relation("UserRoles")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt // Automatically updates on each update
 
@@ -43,6 +46,18 @@ model Post {
   @@index([title, published])
 }
 
+model Profile {
+  id Int @id @default(autoincrement())
+  bio String?
+  userId Int @unique
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Role {
+  id Int @id @default(autoincrement())
+  name String @unique
+  users User[] @relation("UserRoles")
+}
 model Order {
   userId Int
   productId Int
@@ -50,7 +65,7 @@ model Order {
   @@id([userId, productId]) // Composite primary key
 }
 
-enum Role {
+enum RoleEnum {
   USER
   ADMIN
   MODERATOR
