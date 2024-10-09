@@ -53,29 +53,6 @@ async function main() {
 
   // createUserWithEnum();
 
-  async function updateUser(id: number) {
-    const user = await prisma.user.update({
-      where: { id },
-      data: { email: "andu1@gmail.com" },
-    });
-
-    console.log(user);
-  }
-
-  // updateUser(3);
-  async function updateUserWithEnum() {
-    const updatedUser = await prisma.user.update({
-      where: { id: 3 },
-      data: {
-        role: "MODERATOR",
-      },
-    });
-
-    console.log(updatedUser);
-  }
-
-  // updateUserWithEnum();
-
   async function createUserAndPost() {
     const [user, post] = await prisma.$transaction([
       prisma.user.create({
@@ -176,6 +153,25 @@ async function main() {
   }
 
   // createProfile();
+
+  async function createComment() {
+    const comment = await prisma.comment.create({
+      data: {
+        content: "Great post!",
+        // postId: 5
+        // author: {
+        //   connect: { id: 5 },
+        // },
+        post: {
+          connect: { id: 5 },
+        },
+      },
+    });
+
+    console.log(comment);
+  }
+
+  // createComment();
 
   async function getUserWithPosts() {
     const user = await prisma.user.findUnique({
@@ -860,14 +856,37 @@ async function main() {
       },
     });
 
-    console.log(usersWitRoles);
+    // console.log(usersWitRoles);
 
     const users = usersWitRoles.filter((user) => user._count.roles === 0);
 
     console.log(users);
   }
 
-  getUsersWithNoRoles3();
+  // getUsersWithNoRoles3();
+
+  // Filtering users based on post comments
+  async function getUsersWithPostComments() {
+    const users = await prisma.user.findMany({
+      where: {
+        writtenPosts: {
+          some: {
+            comments: {
+              some: {
+                content: {
+                  contains: "Great post!",
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    console.log(users);
+  }
+
+  // getUsersWithPostComments();
 
   // Finding users with at least one liked post
   async function getUsersWithAtLeastOneLikedPost() {
@@ -988,6 +1007,29 @@ async function main() {
     console.log(moderators);
   }
   // getUserByRole();
+
+  async function updateUser(id: number) {
+    const user = await prisma.user.update({
+      where: { id },
+      data: { email: "andu1@gmail.com" },
+    });
+
+    console.log(user);
+  }
+
+  // updateUser(3);
+  async function updateUserWithEnum() {
+    const updatedUser = await prisma.user.update({
+      where: { id: 3 },
+      data: {
+        role: "MODERATOR",
+      },
+    });
+
+    console.log(updatedUser);
+  }
+
+  // updateUserWithEnum();
 
   async function updatePostLikers() {
     const post = await prisma.post.update({
