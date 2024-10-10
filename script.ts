@@ -173,6 +173,21 @@ async function main() {
 
   // createComment();
 
+  // Create a new product
+  async function createProduct() {
+    const product = await prisma.product.create({
+      data: {
+        name: "Mobile",
+        price: 500,
+        stock: 15,
+      },
+    });
+
+    console.log(product);
+  }
+
+  // createProduct();
+
   async function getUserWithPosts() {
     const user = await prisma.user.findUnique({
       where: { id: 1 },
@@ -887,6 +902,97 @@ async function main() {
   }
 
   // getUsersWithPostComments();
+
+  // counting all products approach 1
+  async function countAllProducts() {
+    const count = await prisma.product.count();
+    console.log(count);
+  }
+
+  // countAllProducts();
+
+  // counting all products approach 2
+  async function countAllProducts2() {
+    const totalProducts = await prisma.product.aggregate({
+      _count: {
+        id: true,
+      },
+    });
+    console.log(totalProducts);
+    console.log(totalProducts._count.id);
+  }
+
+  // countAllProducts2();
+
+  // Counting products with stock greater than zero
+  async function countProductsWithStockGreaterThanZero() {
+    const count = await prisma.product.count({
+      where: {
+        stock: {
+          gt: 0,
+        },
+      },
+    });
+    console.log(count);
+  }
+
+  // countProductsWithStockGreaterThanZero();
+
+  // Counting products with stock greater than zero using aggregate
+  async function countProductsWithStockGreaterThanZeroUsingAggregate() {
+    const totalProducts = await prisma.product.aggregate({
+      _count: {
+        _all: true,
+      },
+      where: {
+        stock: {
+          gt: 0,
+        },
+      },
+    });
+    console.log(totalProducts);
+  }
+
+  // countProductsWithStockGreaterThanZeroUsingAggregate();
+
+  // Summing the price of all products
+  async function sumAllProducts() {
+    const sum = await prisma.product.aggregate({
+      _sum: {
+        price: true,
+      },
+    });
+    console.log(sum);
+  }
+
+  // sumAllProducts();
+
+  // Finding the average price of all products
+  async function getAveragePrice() {
+    const averagePrice = await prisma.product.aggregate({
+      _avg: {
+        price: true,
+      },
+    });
+    console.log(averagePrice);
+  }
+
+  // getAveragePrice();
+
+  // Finding the minimum and maximum price of all products
+  async function getMinMaxPrice() {
+    const minMaxPrice = await prisma.product.aggregate({
+      _min: {
+        price: true,
+      },
+      _max: {
+        price: true,
+      },
+    });
+    console.log(minMaxPrice);
+  }
+
+  getMinMaxPrice();
 
   // Finding users with at least one liked post
   async function getUsersWithAtLeastOneLikedPost() {

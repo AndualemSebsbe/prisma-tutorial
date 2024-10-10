@@ -72,14 +72,19 @@ model Product {
   name String
   price Int
   stock Int
+  orders Order[] @relation("OrderProducts")
   createdAt DateTime @default(now())
 }
 
 model Order {
-  userId Int
-  productId Int
+  id Int @id @default(autoincrement())
+  total Float
+  products Product[] @relation("OrderProducts")
+  createdAt DateTime @default(now())
+  // userId Int
+  // productId Int
 
-  @@id([userId, productId]) // Composite primary key
+  // @@id([userId, productId]) // Composite primary key
 }
 
 enum RoleEnum {
