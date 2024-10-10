@@ -66,6 +66,15 @@ model Role {
   name String @unique
   users User[] @relation("UserRoles")
 }
+
+model Product {
+  id Int @id @default(autoincrement())
+  name String
+  price Int
+  stock Int
+  createdAt DateTime @default(now())
+}
+
 model Order {
   userId Int
   productId Int
